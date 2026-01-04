@@ -1,0 +1,36 @@
+﻿@model List<Service>
+
+
+<div class="container">
+    <div class="row">
+        <a class="btn btn-success" asp-action="Create">Create</a>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">ImageUrl</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var service in Model)
+                {
+                    <tr>
+                        <td>@service.Title</td>
+                        <td>@service.Description</td>
+                        <td><img src="~/assets/images/website-images/@service.ImageUrl" width="30" height="30" alt="Alternate Text" /></td>
+                        <td>
+                            <a class="btn btn-warning" asp-action="Update" asp-route-id="@service.Id">Update</a>
+                            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@service.Id">Delete</a>
+                        </td>
+                    </tr>
+
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
