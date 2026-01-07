@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Pronia2.Controllers
 {
-    public class AccountController(UserManager<AppUser> _userManager,SignInManager<AppUser> _signInManager) : Controller
+    public class AccountController(UserManager<AppUser> _userManager, SignInManager<AppUser> _signInManager, RoleManager<IdentityRole> _roleManager, IConfiguration _configuration) : Controller
     {
         public IActionResult Register()
         {
@@ -53,8 +53,9 @@ namespace Pronia2.Controllers
                 return View(vm);
             }
 
+            await _signInManager.SignInAsync(appUser, isPersistent: false);
 
-            return Ok("ok");
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult Login()
@@ -72,12 +73,13 @@ namespace Pronia2.Controllers
             }
 
             var user = await _userManager.FindByEmailAsync(vm.EmailAddress);
-            if (user != null) {
+            if (user == null)
+            {
                 ModelState.AddModelError("", "Invalid login attempt.");
                 return View(vm);
             }
 
-           var result= await _userManager.CheckPasswordAsync(user, vm.Password);
+            var result = await _userManager.CheckPasswordAsync(user, vm.Password);
 
             if (!result)
             {
@@ -85,16 +87,75 @@ namespace Pronia2.Controllers
                 return View(vm);
             }
 
-          await  _signInManager.SignInAsync(user, vm.RememberMe);
+            await _signInManager.SignInAsync(user, vm.RememberMe);
 
-            return Ok("ok");
-        } 
+            return RedirectToAction("Index", "Home");
+        }
 
 
         public async Task<IActionResult> Logout()
         {
-           await _signInManager.SignOutAsync();
+            await _signInManager.SignOutAsync();
             return RedirectToAction(nameof(Login));
+        }
+        public async Task<IActionResult> CreateRole()
+        {
+
+            await _roleManager.CreateAsync(new IdentityRole()
+            {
+
+                Name = "Admin"
+
+            });
+            await _roleManager.CreateAsync(new IdentityRole()
+            {
+
+                Name = "Member"
+
+            });
+            await _roleManager.CreateAsync(new IdentityRole()
+            {
+
+                Name = "Moderator"
+
+            });
+            
+            return Ok("Role Created");
+
+        }
+
+        public async Task<IActionResult> CreateAdminAndModerator()
+        {
+            var adminUserVM = _configuration.GetSection("AdminUser").Get<UserVm>();
+            var moderatorUserVM = _configuration.GetSection("ModeratorUser").Get<UserVm>();
+
+            if (adminUserVM is not null)
+            {
+                AppUser adminUser = new AppUser()
+                {
+                    FirstName = adminUserVM.FirstName,
+                    LastName = adminUserVM.LastName,
+                    Email = adminUserVM.Email,
+                    UserName = adminUserVM.UserName,
+                };
+                await _userManager.CreateAsync(adminUser, adminUserVM.Password);
+                await _userManager.AddToRoleAsync(adminUser, "Admin");
+            }
+
+            if (moderatorUserVM is not null)
+            {
+                AppUser moderatorUser = new AppUser()
+                {
+                    FirstName = moderatorUserVM.FirstName,
+                    LastName = moderatorUserVM.LastName,
+                    Email = moderatorUserVM.Email,
+                    UserName = moderatorUserVM.UserName,
+                };
+                await _userManager.CreateAsync(moderatorUser, moderatorUserVM.Password);
+                await _userManager.AddToRoleAsync(moderatorUser, "Moderator");
+            }
+
+            return Ok("Successfully!");
         }
     }
 }
