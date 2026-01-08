@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Pronia2.Abstractions;
 using Pronia2.Contexts;
+using Pronia2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddScoped<IEMailService,EmailService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(opt => {
     opt.UseSqlServer(builder.Configuration.GetConnectionString("Default"));

@@ -24,6 +24,8 @@ namespace Pronia.Controllers
                 MainImageUrl = product.MainImageUrl,
                 HoverImageUrl = product.HoverImageUrl
             }).ToList();
+
+            TempData["ErrorMessage"] = "You must be logged in to access the shop.";
             return View(products);
         }
 
