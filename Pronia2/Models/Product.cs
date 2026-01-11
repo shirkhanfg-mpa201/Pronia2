@@ -26,6 +26,8 @@ namespace Pronia2.Models
         public ICollection<ProductImage> ProductImages { get; set; } = [];
         public ICollection<ProductBrand> ProductBrands { get; set; } = [];
 
+        public ICollection<BasketItem> BasketItems { get; set; } = [];
+
 
 
     }

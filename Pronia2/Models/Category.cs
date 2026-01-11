@@ -7,6 +7,6 @@ namespace Pronia2.Models
     {
   
         public string Name { get; set; }
-        public ICollection<Product> Products { get; set; } // Add this property
+        public ICollection<Product> Products { get; set; } 
     }
 }

@@ -5,6 +5,9 @@ using Pronia2.Contexts;
 using Pronia2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IBasketService, BasketService>();
+
 builder.Services.AddScoped<IEMailService,EmailService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(opt => {
